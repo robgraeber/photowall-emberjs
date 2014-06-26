@@ -11,7 +11,19 @@ App.ApplicationController = Ember.Controller.extend({
 // });
 App.IndexController = Ember.Controller.extend({
   title:"The is the index controller",
-  photos: photos.data.slice(0,80)
+  photos: photos.data.slice(0,80),
+  init:function(){
+    this._super();
+    $(window).scroll(function(){
+      console.log("load more");
+      var topHeight = $("body").height() - window.innerHeight;
+      if(topHeight - $(window).scrollTop() < 1000){
+        var photosArr = this.get("photos");
+        var len = photosArr.length;
+        this.set("photos", photosArr.concat(photos.data.slice(len, len+15)));
+      } 
+    }.bind(this));
+  }
 });
 App.PhotoViewComponent = Ember.Component.extend({
   classNames: ['photoImg'],
@@ -22,7 +34,7 @@ App.PhotoViewComponent = Ember.Component.extend({
     this.$().on('error', function(e){
         return this.imgError(e);
     }.bind(this));
-    animateCheck(this.$()[0]);
+    // animateCheck(this.$()[0]);
   },
   imgError:function(e){
     e.target.style.display = 'none';
